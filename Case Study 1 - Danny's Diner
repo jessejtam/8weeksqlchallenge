@@ -64,7 +64,7 @@ WITH member_first_order AS (
     USING(customer_id)
     LEFT JOIN dannys_diner.menu
     USING(product_id)
-    WHERE order_date > join_date
+    WHERE order_date >= join_date
     GROUP BY customer_id, product_name)
    
 SELECT customer_id, 
@@ -113,7 +113,7 @@ FROM before_totals;
 WITH points_table AS (
     SELECT customer_id,
         CASE WHEN product_name = 'sushi' THEN price * 20
-        ELSE price * 10 END AS points
+            ELSE price * 10 END AS points
     FROM dannys_diner.sales
     LEFT JOIN dannys_diner.menu
     USING(product_id))
@@ -128,8 +128,8 @@ ORDER BY customer_id;
 WITH points_table AS (
     SELECT customer_id,
         CASE WHEN order_date BETWEEN join_date AND join_date + 6 THEN price * 20
-        WHEN product_name = 'sushi' THEN price * 20
-        ELSE price * 10 END AS points
+            WHEN product_name = 'sushi' THEN price * 20
+            ELSE price * 10 END AS points
     FROM dannys_diner.sales
     LEFT JOIN dannys_diner.menu
     USING(product_id)
@@ -143,3 +143,37 @@ SELECT customer_id,
 FROM points_table
 GROUP BY customer_id
 ORDER BY customer_id;
+
+-- BONUS QUESTION 1: JOIN ALL THE THINGS
+SELECT customer_id, 
+    order_date, 
+    product_name, 
+    price,
+    CASE WHEN order_date >= join_date THEN 'Y'
+        ELSE 'N' END AS member
+FROM dannys_diner.sales
+LEFT JOIN dannys_diner.menu
+USING(product_id)
+LEFT JOIN dannys_diner.members
+USING(customer_id)
+ORDER BY customer_id, order_date, product_name
+
+-- BONUS QUESTION 2: RANK ALL THE THINGS
+WITH member_table AS (
+    SELECT customer_id, 
+        order_date, 
+        product_name, 
+        price,
+        CASE WHEN order_date >= join_date THEN 'Y'
+            ELSE 'N' END AS member
+    FROM dannys_diner.sales
+    LEFT JOIN dannys_diner.menu
+    USING(product_id)
+    LEFT JOIN dannys_diner.members
+    USING(customer_id))
+
+SELECT *,
+    CASE WHEN member = 'N' THEN null
+        ELSE RANK() OVER(PARTITION BY customer_id, member ORDER BY order_date ASC) END AS ranking 
+FROM member_table
+ORDER BY customer_id ASC, order_date ASC, product_name ASC;
