@@ -1,5 +1,5 @@
 -- 1. What is the total amount each customer spent at the restaurant?
-`````sql
+````sql
 SELECT s.customer_id, 
     SUM(m.price) AS total_spent
 FROM dannys_diner.sales AS s
@@ -7,7 +7,7 @@ LEFT JOIN dannys_diner.menu AS m
 USING(product_id)
 GROUP BY s.customer_id
 ORDER BY customer_id ASC;
-```
+````
 -- 2. How many days has each customer visited the restaurant?
 SELECT customer_id, 
     COUNT(DISTINCT(order_date)) AS visits
