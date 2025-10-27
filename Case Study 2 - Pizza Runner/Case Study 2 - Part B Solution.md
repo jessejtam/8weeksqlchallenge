@@ -13,7 +13,7 @@ ORDER BY Week;
 ````sql
 SELECT
 	runner_id,
-    DATE_TRUNC('second', AVG(pickup_time :: TIMESTAMP - order_time)) AS avg_time
+    DATE_TRUNC('minute', AVG(pickup_time :: TIMESTAMP - order_time) + INTERVAL '30 seconds') AS avg_time
 FROM pizza_runner.customer_orders
 LEFT JOIN pizza_runner.runner_orders
 USING(order_id)
@@ -23,8 +23,24 @@ ORDER BY runner_id;
 ````
 
 ## 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
-
-
+````sql
+SELECT
+	num_of_pizza,
+    DATE_TRUNC('minute', AVG(pickup_time - order_time) + INTERVAL '30 seconds') AS avg_time
+FROM (
+	SELECT
+		order_id,
+  		order_time,
+  		COUNT(*) AS num_of_pizza
+	FROM pizza_runner.customer_orders
+	GROUP BY order_id, order_time) AS t1
+LEFT JOIN pizza_runner.runner_orders
+USING(order_id)
+WHERE pickup_time IS NOT NULL
+GROUP BY num_of_pizza
+ORDER BY num_of_pizza;
+````
+NEED TO CHECK IF CORRECT
 ## 4. What was the average distance travelled for each customer?
 DONE
 
@@ -34,12 +50,12 @@ DONE
 ## 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
 ````sql
 SELECT
-	runner_id,
-    ROUND(AVG(distance / (duration / 60)),2) AS avg_speed
+	order_id,
+    runner_id,
+    ROUND(distance / (duration / 60),2) AS avg_speed
 FROM pizza_runner.runner_orders
 WHERE distance IS NOT NULL
-GROUP BY runner_id
-ORDER BY runner_id;
+ORDER BY order_id;
 ````
 NEED TO UPDATE COLUMN TYPE USING - ALTER TABLE ALTER COLUMN col_name TYPE DECIMAL USING(col_name :: DECIMAL)
 
