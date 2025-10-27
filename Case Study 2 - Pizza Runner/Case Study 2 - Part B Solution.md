@@ -32,6 +32,35 @@ DONE
 DONE
 
 ## 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
-
+````sql
+SELECT
+	runner_id,
+    ROUND(AVG(distance / (duration / 60)),2) AS avg_speed
+FROM pizza_runner.runner_orders
+WHERE distance IS NOT NULL
+GROUP BY runner_id
+ORDER BY runner_id;
+````
+NEED TO UPDATE COLUMN TYPE USING - ALTER TABLE ALTER COLUMN col_name TYPE DECIMAL USING(col_name :: DECIMAL)
 
 ## 7. What is the successful delivery percentage for each runner?
+````sql
+SELECT
+	runner_id,
+    ROUND((successful_deliveries * 100 / total_deliveries :: DECIMAL)) AS delivery_percent
+FROM (
+ 	SELECT
+  		runner_id,
+  		COUNT(*) AS total_deliveries
+	FROM pizza_runner.runner_orders
+ 	GROUP BY runner_id) AS t1
+LEFT JOIN (
+	SELECT
+  		runner_id,
+  		COUNT(*) AS successful_deliveries
+ 	FROM pizza_runner.runner_orders
+	WHERE pickup_time IS NOT NULL
+  	GROUP BY runner_id) AS t2
+USING(runner_id)
+ORDER BY runner_id;
+````
