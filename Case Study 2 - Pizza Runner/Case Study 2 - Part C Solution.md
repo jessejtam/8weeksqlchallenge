@@ -2,7 +2,7 @@
 ````sql
 WITH ingredients AS (
 	SELECT 
-		pizza_id,
+		pizza_name,
     	topping_name
 	FROM (
   		SELECT 
@@ -11,13 +11,15 @@ WITH ingredients AS (
   		FROM pizza_recipes) AS t1
 	LEFT JOIN pizza_toppings AS t2
 	ON t1.tops = t2.topping_id
+  	LEFT JOIN pizza_names
+  	USING(pizza_id)
 	ORDER BY pizza_id, tops)
 
 SELECT 
-	pizza_id,
+	pizza_name,
     STRING_AGG(topping_name, ', ') AS toppings
 FROM ingredients
-GROUP BY pizza_id;
+GROUP BY pizza_name;
 ````
 
 ## 2. What was the most commonly added extra?
