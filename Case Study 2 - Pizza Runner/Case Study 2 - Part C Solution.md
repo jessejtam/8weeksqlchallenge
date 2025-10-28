@@ -1,5 +1,24 @@
 ## 1. What are the standard ingredients for each pizza?
+````sql
+WITH ingredients AS (
+	SELECT 
+		pizza_id,
+    	topping_name
+	FROM (
+  		SELECT 
+			pizza_id, 
+    		REGEXP_SPLIT_TO_TABLE(toppings, ',') :: INTEGER AS tops
+  		FROM pizza_recipes) AS t1
+	LEFT JOIN pizza_toppings AS t2
+	ON t1.tops = t2.topping_id
+	ORDER BY pizza_id, tops)
 
+SELECT 
+	pizza_id,
+    STRING_AGG(topping_name, ', ') AS toppings
+FROM ingredients
+GROUP BY pizza_id;
+````
 
 ## 2. What was the most commonly added extra?
 
