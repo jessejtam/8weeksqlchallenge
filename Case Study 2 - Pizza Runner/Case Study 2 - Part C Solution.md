@@ -125,4 +125,45 @@ ON words.order_id = extra.order_id AND words.rn = extra.rn
 
 
 ## 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
+WITH exclusion AS (
+  	SELECT
+  		order_id,
+      	ROW_NUMBER() OVER(ORDER BY order_id ASC, pizza_id ASC, exclusions DESC) AS rn,
+  		REGEXP_SPLIT_TO_TABLE(exclusions, ',') AS topping
+  	FROM pizza_runner.customer_orders
+),
 
+extra AS (
+	SELECT
+  		order_id,
+  		STRING_AGG(topping_name, ', ') AS extra_topping,
+  		rn
+  	FROM (
+  		SELECT
+  			order_id,
+      		ROW_NUMBER() OVER(ORDER BY order_id ASC, pizza_id ASC, exclusions DESC) AS rn,
+  			REGEXP_SPLIT_TO_TABLE(extras, ',') AS topping
+  		FROM pizza_runner.customer_orders) AS t1 
+  	LEFT JOIN pizza_runner.pizza_toppings AS t2
+  	ON t1.topping :: INTEGER = t2.topping_id
+  	GROUP BY order_id, rn	
+),
+
+regular AS (
+	SELECT
+  		topping_name,
+  		COUNT(*) AS amount
+  	FROM (
+      	SELECT
+  			order_id,
+  			REGEXP_SPLIT_TO_TABLE(toppings, ',') AS toppings
+  		FROM pizza_runner.customer_orders
+  		LEFT JOIN pizza_runner.pizza_recipes
+  		USING(pizza_id)) AS t1
+  	LEFT JOIN pizza_runner.pizza_toppings AS t2
+  	ON t1.toppings :: INTEGER = t2.topping_id
+  	GROUP BY topping_name
+) 
+
+SELECT *
+FROM regular
