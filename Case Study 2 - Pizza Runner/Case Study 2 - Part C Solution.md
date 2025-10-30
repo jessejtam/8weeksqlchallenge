@@ -23,10 +23,40 @@ GROUP BY pizza_name;
 ````
 
 ## 2. What was the most commonly added extra?
+````sql
+WITH toppings AS (
+	SELECT
+  		REGEXP_SPLIT_TO_TABLE(extras, ',') AS extra
+  	FROM pizza_runner.customer_orders
+)
 
+SELECT
+	topping_name,
+    COUNT(extra) AS times_added
+FROM toppings AS t1
+LEFT JOIN pizza_runner.pizza_toppings AS t2
+ON t1.extra :: INTEGER = t2.topping_id
+GROUP BY topping_name
+ORDER BY times_added DESC;
+````
 
 ## 3. What was the most common exclusion?
+````sql
+WITH toppings AS (
+	SELECT
+  		REGEXP_SPLIT_TO_TABLE(exclusions, ',') AS exclusion
+  	FROM pizza_runner.customer_orders
+)
 
+SELECT
+	topping_name,
+    COUNT(exclusion) AS times_excluded
+FROM toppings AS t1
+LEFT JOIN pizza_runner.pizza_toppings AS t2
+ON t1.exclusion :: INTEGER = t2.topping_id
+GROUP BY topping_name
+ORDER BY times_excluded DESC;
+````
 
 ## 4. Generate an order item for each record in the customers_orders table in the format of one of the following:
 ### - Meat Lovers
