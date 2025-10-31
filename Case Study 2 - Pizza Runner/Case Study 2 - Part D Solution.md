@@ -34,4 +34,19 @@ Delivery duration
 Average speed
 Total number of pizzas
 ## 5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?
+````sql
+WITH profits AS (
+	SELECT
+  		CASE WHEN pizza_id = 1 THEN 12
+  		ELSE 10 END AS profit,
+  		distance :: DECIMAL * 0.3 AS expenses
+  	FROM pizza_runner.customer_orders
+  	LEFT JOIN pizza_runner.runner_orders_clean
+  	USING(order_id)
+  	WHERE pickup_time IS NOT NULL
+)
 
+SELECT
+	SUM(profit) - SUM(expenses) AS total_profit
+FROM profits
+````
