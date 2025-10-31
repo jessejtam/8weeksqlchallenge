@@ -4,22 +4,23 @@
 
 Removing any blank spaces or written 'null' values and actually making them NULL in the Exclusions column
 ````sql
-UPDATE pizza_runner.customer_orders
-SET exclusions = NULL
-WHERE exclusions = 'null' OR exclusions = '';
-````
-
-Removing any blank spaces or written 'null' values and actually making them NULL in the Extras column
-````sql
-UPDATE pizza_runner.customer_orders
-SET extras = NULL
-WHERE extras = 'null' OR extras = '';
+CREATE TABLE customer_orders_clean AS
+SELECT
+	order_id,
+    customer_id,
+    pizza_id,
+	CASE WHEN exclusions = '' OR exclusions = 'null' THEN NULL
+    ELSE exclusions END AS exclusions,
+	CASE WHEN extras = '' OR extras = 'null' THEN NULL
+    ELSE extras END AS extras,
+    order_time
+FROM pizza_runner.customer_orders;
 ````
 
 ### Result of Data Cleaning for Customer Orders Table
 ````sql
 SELECT *
-FROM pizza_runner.customer_orders
+FROM customer_orders_clean
 ````
 
 # Runner Orders Table
@@ -28,52 +29,26 @@ FROM pizza_runner.customer_orders
 
 Replacing all 'null' values with actual NULL in the distance column.
 ````sql
-UPDATE pizza_runner.runner_orders
-SET distance = NULL
-WHERE distance = 'null';
-````
-
-Trimming all the km off so they can be treated as numbers in distance column
-````sql
-UPDATE pizza_runner.runner_orders
-SET distance = TRIM('km' FROM distance);
-````
-
-Replace all 'null' values with NULL in pickup_time column
-````sql
-UPDATE pizza_runner.runner_orders
-SET pickup_time = NULL
-WHERE pickup_time = 'null';
-````
-
-Replace all 'null' values with NULL in duration column
-````sql
-UPDATE pizza_runner.runner_orders
-SET duration = NULL
-WHERE duration = 'null';
-````
-
-Trim all the words out of the duration column
-````sql
-UPDATE pizza_runner.runner_orders
-SET duration = CASE
-    WHEN duration LIKE '%mins' THEN TRIM('mins' FROM duration)
-    WHEN duration LIKE '%minute' THEN TRIM('minute' FROM duration)
-    WHEN duration LIKE '%minutes' THEN TRIM('minutes' FROM duration)
-    ELSE duration
-END;
-````
-
-Replace all 'null' or blank spaces with NULL in cancellation column
-````sql
-UPDATE pizza_runner.runner_orders
-SET cancellation = NULL
-WHERE cancellation = '' OR cancellation = 'null';
+CREATE TABLE runner_orders_clean AS
+SELECT
+	order_id,
+    runner_id,
+    CASE WHEN pickup_time = 'null' THEN NULL
+    ELSE pickup_time END AS pickup_time,
+    CASE WHEN distance = 'null' THEN NULL
+    ELSE TRIM('km' FROM distance) END AS distance,
+    CASE WHEN duration LIKE '%mins' THEN TRIM('mins' FROM duration)
+        WHEN duration LIKE '%minute' THEN TRIM('minute' FROM duration)
+        WHEN duration LIKE '%minutes' THEN TRIM('minutes' FROM duration)
+        WHEN duration = 'null' THEN NULL
+    ELSE duration END AS duration,
+    CASE WHEN cancellation = '' OR cancellation = 'null' THEN NULL
+    ELSE cancellation END AS cancellation
+FROM pizza_runner.runner_orders;
 ````
 
 ### Result of Data Cleaning for Runner Orders Table
 ````sql
-TEST RUNNER_ORDERS
 SELECT *
-FROM pizza_runner.runner_orders;
+FROM pizza_runner.runner_orders_clean
 ````
