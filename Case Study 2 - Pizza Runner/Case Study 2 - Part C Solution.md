@@ -122,7 +122,116 @@ ON words.order_id = extra.order_id AND words.rn = extra.rn
 
 ## 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
 ### - For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
+````sql
+WITH pizza_table AS (
+	SELECT
+  		order_id,
+  		pizza_name,
+  		pizza_id,
+  		exclusions,
+  		extras,
+  		ROW_NUMBER() OVER(ORDER BY order_id ASC, exclusions DESC) AS row_num
+  	FROM pizza_runner.customer_orders
+  	LEFT JOIN pizza_runner.pizza_names
+  	USING(pizza_id)
+),
 
+regular AS (
+	SELECT
+  		order_id,
+  		toppings,
+  		COUNT(toppings) AS total,
+  		row_num
+  	FROM (
+      	SELECT
+      		order_id,
+      		REGEXP_SPLIT_TO_TABLE(toppings, ',') AS toppings,
+      		row_num
+      	FROM pizza_table
+      	LEFT JOIN pizza_runner.pizza_recipes
+     	USING(pizza_id)
+    ) AS t1
+  	GROUP BY toppings, order_id, row_num
+),
+
+exclusion AS (
+	SELECT
+  		order_id,
+  		toppings,
+  		COUNT(toppings) * -1,
+  		row_num
+  	FROM (
+    	SELECT
+      		order_id,
+      		REGEXP_SPLIT_TO_TABLE(exclusions, ',') AS toppings,
+      		row_num
+      	FROM pizza_table
+    ) AS t1
+  	GROUP BY toppings, order_id, row_num
+),
+
+extra AS (
+	SELECT
+  		order_id,
+  		toppings,
+  		COUNT(toppings),
+  		row_num
+  	FROM (
+    	SELECT
+      		order_id,
+      		REGEXP_SPLIT_TO_TABLE(extras, ',') AS toppings,
+      		row_num
+      	FROM pizza_table
+    ) AS t1
+  	GROUP BY toppings, order_id, row_num
+),
+
+combine AS (
+	SELECT
+  		order_id,
+  		topping_name,
+  		SUM(total) AS total,
+  		row_num
+  	FROM (
+    	SELECT *
+  			FROM regular
+            UNION ALL
+            SELECT *
+            FROM exclusion
+            UNION ALL
+            SELECT *
+            FROM extra
+    ) AS t1
+  	LEFT JOIN pizza_runner.pizza_toppings AS t2
+  	ON t1.toppings :: INTEGER = t2.topping_id
+  	GROUP BY topping_name, order_id, row_num
+),
+
+wording AS (
+	SELECT
+		order_id,
+  		STRING_AGG(topping_name, ', ' ORDER BY topping_name ASC) AS ingredients,
+  		row_num
+  	FROM (
+      	SELECT
+      		order_id,
+      		CASE WHEN total = 0 THEN NULL
+  			WHEN total = 2 THEN CONCAT('2x', topping_name)
+  			ELSE topping_name END AS topping_name,
+      		row_num
+     	FROM combine
+    ) AS t1
+  	WHERE topping_name IS NOT NULL
+  	GROUP BY order_id, row_num
+)
+
+SELECT
+	pizza_table.order_id,
+	CONCAT(pizza_name,': ', ingredients) AS final_ingredients
+FROM pizza_table
+LEFT JOIN wording
+USING(row_num)
+````
 
 ## 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
 ````sql
