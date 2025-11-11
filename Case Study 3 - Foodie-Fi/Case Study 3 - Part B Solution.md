@@ -172,6 +172,7 @@ day_difference AS (
   	FROM trial_date
   	LEFT JOIN annual_date
   	USING(customer_id)
+  	WHERE annual IS NOT NULL AND trial IS NOT NULL
 )
 
 SELECT
@@ -186,7 +187,7 @@ SELECT
     	WHEN difference BETWEEN 241 AND 270 THEN '241-270'
     	WHEN difference BETWEEN 271 AND 300 THEN '271-300'
     	WHEN difference BETWEEN 301 AND 330 THEN '301-330'
-    ELSE '331-360' END AS time_period,
+   	ELSE '331-360' END AS time_period,
     COUNT(*)
 FROM day_difference
 GROUP BY time_period
