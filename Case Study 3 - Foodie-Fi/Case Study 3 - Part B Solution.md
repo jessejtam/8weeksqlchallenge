@@ -17,7 +17,16 @@ ORDER BY total_trials DESC;
 ````
 
 ### 3. What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name
-
+````sql
+SELECT
+	plan_name,
+    COUNT(*)
+FROM foodie_fi.subscriptions
+LEFT JOIN foodie_fi.plans
+USING(plan_id)
+WHERE start_date >= '2021-01-01'
+GROUP BY plan_name;
+````
 
 ### 4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
 ````sql
@@ -75,7 +84,35 @@ GROUP BY plan_name;
 ````
 
 ### 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
+````sql
+WITH ranked_table AS (
+	SELECT
+  		customer_id,
+  		plan_name,
+  		start_date,
+  		RANK() OVER(PARTITION BY customer_id ORDER BY start_date ASC) AS plan_rank
+  	FROM foodie_fi.subscriptions
+  	LEFT JOIN foodie_fi.plans
+  	USING(plan_id)
+  	WHERE start_date <= '2020-12-31'
+),
 
+max_rank AS (
+	SELECT 
+  		customer_id,
+  		MAX(plan_rank) AS top_rank
+  	FROM ranked_table
+  	GROUP BY customer_id
+)
+
+SELECT
+	plan_name,
+    COUNT(*) AS total_subscriptions
+FROM ranked_table AS t1
+INNER JOIN max_rank AS t2
+ON t1.customer_id = t2.customer_id AND t1.plan_rank = t2.top_rank
+GROUP BY plan_name;
+````
 
 ### 8. How many customers have upgraded to an annual plan in 2020?
 ````sql
