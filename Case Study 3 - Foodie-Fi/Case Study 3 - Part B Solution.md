@@ -122,11 +122,102 @@ FROM foodie_fi.subscriptions
 WHERE plan_id = 3 AND start_date <= '2020-12-31';
 ````
 
-### 9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
+### 9. How many days on average does it take for a customer to upgrade to an annual plan from the day they join Foodie-Fi?
+````sql
+WITH trial_date AS (
+  	SELECT
+  		customer_id,
+  		start_date
+  	FROM foodie_fi.subscriptions
+  	WHERE plan_id = 0
+),
 
+annual_date AS (
+	SELECT
+  		customer_id,
+  		start_date
+  	FROM foodie_fi.subscriptions
+  	WHERE plan_id = 3
+)
 
-### 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
+SELECT
+	ROUND(AVG(a.start_date - t.start_date),0) AS avg_days
+FROM trial_date AS t
+LEFT JOIN annual_date AS a
+USING(customer_id);
+````
 
+### 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc) NEED TO FIX
+WITH trial_date AS (
+  	SELECT
+  		customer_id,
+  		start_date AS trial
+  	FROM foodie_fi.subscriptions
+  	WHERE plan_id = 0
+),
+
+annual_date AS (
+	SELECT
+  		customer_id,
+  		start_date AS annual
+  	FROM foodie_fi.subscriptions
+  	WHERE plan_id = 3
+),
+
+day_difference AS (
+	SELECT
+  		customer_id,
+  		annual - trial AS difference
+  	FROM trial_date
+  	LEFT JOIN annual_date
+  	USING(customer_id)
+)
+
+SELECT
+	CASE WHEN difference BETWEEN 0 AND 30 THEN '0-30'
+    	WHEN difference BETWEEN 31 AND 60 THEN '31-60'
+    	WHEN difference BETWEEN 61 AND 90 THEN '61-90'
+    	WHEN difference BETWEEN 91 AND 120 THEN '91-120'
+    	WHEN difference BETWEEN 121 AND 150 THEN '121-150'
+    	WHEN difference BETWEEN 151 AND 180 THEN '151-180'
+    	WHEN difference BETWEEN 181 AND 210 THEN '181-210'
+    	WHEN difference BETWEEN 211 AND 240 THEN '211-240'
+    	WHEN difference BETWEEN 241 AND 270 THEN '241-270'
+    	WHEN difference BETWEEN 271 AND 300 THEN '271-300'
+    	WHEN difference BETWEEN 301 AND 330 THEN '301-330'
+    ELSE '331-360' END AS time_period,
+    COUNT(*)
+FROM day_difference
+GROUP BY time_period
+ORDER BY
+	CASE WHEN time_period = '0-30' THEN 1
+    	WHEN time_period = '31-60' THEN 2
+        WHEN time_period = '61-90' THEN 3
+        WHEN time_period = '91-120' THEN 4
+        WHEN time_period = '121-150' THEN 5
+      	WHEN time_period = '151-180' THEN 6
+        WHEN time_period = '181-210' THEN 7
+      	WHEN time_period = '211-240' THEN 8
+       	WHEN time_period = '241-270' THEN 9
+       	WHEN time_period = '271-300' THEN 10
+        WHEN time_period = '301-330' THEN 11
+        WHEN time_period = '331-360' THEN 12
+     END;
 
 ### 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
+````sql
+WITH ranked_table AS (
+	SELECT
+  		customer_id,
+  		plan_id,
+  		start_date,
+  		RANK() OVER(PARTITION BY customer_id ORDER BY start_date ASC) AS date_rank
+  	FROM foodie_fi.subscriptions
+  	WHERE plan_id = 1 OR plan_id = 2 AND start_date <= '2020-12-31'
+)
 
+SELECT
+	COUNT(*) AS downgraded
+FROM ranked_table
+WHERE plan_id = 2 AND date_rank = 1 AND plan_id = 1 AND date_rank = 2
+````
