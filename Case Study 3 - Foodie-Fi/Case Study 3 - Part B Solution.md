@@ -148,6 +148,7 @@ USING(customer_id);
 ````
 
 ### 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc) NEED TO FIX
+````sql
 WITH trial_date AS (
   	SELECT
   		customer_id,
@@ -189,20 +190,8 @@ SELECT
     COUNT(*)
 FROM day_difference
 GROUP BY time_period
-ORDER BY
-	CASE WHEN time_period = '0-30' THEN 1
-    	WHEN time_period = '31-60' THEN 2
-        WHEN time_period = '61-90' THEN 3
-        WHEN time_period = '91-120' THEN 4
-        WHEN time_period = '121-150' THEN 5
-      	WHEN time_period = '151-180' THEN 6
-        WHEN time_period = '181-210' THEN 7
-      	WHEN time_period = '211-240' THEN 8
-       	WHEN time_period = '241-270' THEN 9
-       	WHEN time_period = '271-300' THEN 10
-        WHEN time_period = '301-330' THEN 11
-        WHEN time_period = '331-360' THEN 12
-     END;
+ORDER BY MIN(difference);
+````
 
 ### 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
 ````sql
