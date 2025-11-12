@@ -107,4 +107,82 @@ ORDER BY customer_id,
 ````
 
 ### 5. What is the percentage of customers who increase their closing balance by more than 5%?
+````sql
+WITH deposits AS (
+	SELECT
+  		customer_id,
+  		TO_CHAR(txn_date, 'FMMonth') AS month,
+  		txn_amount
+  	FROM data_bank.customer_transactions
+  	WHERE txn_type = 'deposit'
+),
 
+other AS (
+	SELECT
+  		customer_id,
+  		TO_CHAR(txn_date, 'FMMonth') AS month,
+  		txn_amount * -1
+  	FROM data_bank.customer_transactions
+  	WHERE txn_type <> 'deposit'
+),
+
+combine AS (
+	SELECT *
+  	FROM deposits
+  	UNION
+  	SELECT *
+  	FROM other
+),
+
+closing AS (
+	SELECT
+		customer_id,
+		month,
+    	SUM(txn_amount) AS closing_balance
+	FROM combine
+	GROUP BY customer_id, month
+),
+
+ranked AS (
+	SELECT
+		customer_id,
+		month,
+    	closing_balance,
+    	LEAD(closing_balance) OVER(PARTITION BY customer_id ORDER BY
+        	CASE WHEN month = 'January' THEN 1
+    			WHEN month = 'February' THEN 2
+    			WHEN month = 'March' THEN 3
+    			WHEN month = 'April' THEN 4
+        	END) AS next_balance,
+  		RANK() OVER(PARTITION BY customer_id ORDER BY
+        	CASE WHEN month = 'January' THEN 1
+    			WHEN month = 'February' THEN 2
+    			WHEN month = 'March' THEN 3
+    			WHEN month = 'April' THEN 4
+            END) AS month_rank
+	FROM closing
+),
+
+initial_balance AS (
+	SELECT
+  		customer_id,
+  		closing_balance AS initial_bal
+  	FROM ranked
+  	WHERE month_rank = 1
+),
+
+final_balance AS (
+	SELECT
+  		customer_id,
+  		closing_balance AS final_bal
+  	FROM ranked
+  	WHERE next_balance IS NULL
+)
+
+SELECT
+	100 * COUNT(*) :: DECIMAL / 500 AS percentage
+FROM initial_balance
+LEFT JOIN final_balance
+USING(customer_id)
+WHERE final_bal > 1.05 * initial_bal AND final_bal IS NOT NULL AND initial_bal IS NOT NULL;
+````
