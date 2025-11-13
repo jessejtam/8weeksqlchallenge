@@ -9,7 +9,7 @@ CREATE TABLE clean_weekly_sales AS
         ELSE 5 END AS week_number,
         DATE_PART('month', TO_DATE(week_date,'DD-MM-YY')) AS month_number,
         DATE_PART('year', TO_DATE(week_date,'DD-MM-YY')) AS calendar_year,
-        CASE WHEN segment IS NULL THEN 'unknown'
+        CASE WHEN segment = 'null' THEN 'unknown'
         ELSE segment END AS segment,
         CASE WHEN segment LIKE '_1' THEN 'Young Adults'
         	WHEN segment LIKE '_2' THEN 'Middle Aged'
