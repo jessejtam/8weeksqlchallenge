@@ -10,7 +10,7 @@ CREATE TABLE clean_weekly_sales AS
         CASE WHEN segment LIKE '_1' THEN 'Young Adults'
         	WHEN segment LIKE '_2' THEN 'Middle Aged'
             WHEN segment LIKE '_3' OR segment LIKE '_4' THEN 'Retirees'
-        ELSE 'unkwown' END AS age_band,
+        ELSE 'unknown' END AS age_band,
         CASE WHEN segment LIKE 'C_' THEN 'Couples'
         	WHEN segment LIKE 'F_' THEN 'Families'
         ELSE 'unknown' END AS demographic,
