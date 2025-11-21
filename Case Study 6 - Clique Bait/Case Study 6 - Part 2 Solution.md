@@ -4,6 +4,7 @@ SELECT
 	COUNT(DISTINCT(user_id)) AS total_users
 FROM clique_bait.users;
 ````
+<img width="107" height="94" alt="image" src="https://github.com/user-attachments/assets/a089bdf8-8b02-4da1-941f-9c8e3841123f" />
 
 ### 2. How many cookies does each user have on average?
 ````sql
