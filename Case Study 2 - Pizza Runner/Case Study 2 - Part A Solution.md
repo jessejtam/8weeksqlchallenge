@@ -52,18 +52,18 @@ GROUP BY pizza_name;
 ## 5. How many Vegetarian and Meatlovers were ordered by each customer?
 #### SQL Query
 ````sql
-SELECT 
-    customer_id, 
-    pizza_name, 
-    COUNT(*) AS pizzas_ordered
+SELECT
+    customer_id,
+    SUM(CASE WHEN pizza_name = 'Meatlovers' THEN 1 ELSE 0 END) AS number_of_meatlovers,
+    SUM(CASE WHEN pizza_name = 'Vegetarian' THEN 1 ELSE 0 END) AS number_of_vegetarian
 FROM customer_orders_clean
 LEFT JOIN pizza_runner.pizza_names
 USING(pizza_id)
-GROUP BY customer_id, pizza_name
+GROUP BY customer_id
 ORDER BY customer_id;
 ````
 #### Final Output
-<img width="407" height="266" alt="image" src="https://github.com/user-attachments/assets/68816b45-f17a-48b7-a2e7-38ca76d4da33" />
+<img width="480" height="190" alt="image" src="https://github.com/user-attachments/assets/e7f2a52c-276b-4d79-b323-53e465587394" />
 
 ## 6. What was the maximum number of pizzas delivered in a single order?
 #### SQL Query
@@ -139,11 +139,10 @@ ORDER BY hour;
 #### SQL Query
 ````sql
 SELECT 
-    TO_CHAR((order_time + INTERVAL '2 days'), 'DAY') AS day_of_the_week, 
+    TO_CHAR(order_time, 'DAY') AS day_of_the_week, 
     COUNT(*) AS pizzas_ordered
 FROM customer_orders_clean
-GROUP BY day_of_the_week
-ORDER BY pizzas_ordered DESC;
+GROUP BY day_of_the_week;
 ````
 #### Final Output
-<img width="253" height="144" alt="image" src="https://github.com/user-attachments/assets/dc16a494-c112-42b8-8787-fe1cb6ae09a3" />
+<img width="258" height="153" alt="image" src="https://github.com/user-attachments/assets/5da938e8-a228-4482-aaea-e93b05aad192" />
