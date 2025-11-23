@@ -1,8 +1,8 @@
-# Customer Orders Table
+## Customer Orders Table
 #### Original Table
 <img width="894" height="429" alt="image" src="https://github.com/user-attachments/assets/02658194-5628-46b5-873e-89cf193aad5d" />
 
-Removing any blank spaces or written 'null' values and actually making them NULL in the Exclusions column
+Removing any blank spaces or written 'null' values and making them NULL in the Exclusions and Extras columns
 #### SQL Query
 ````sql
 CREATE TABLE customer_orders_clean AS
@@ -24,11 +24,11 @@ FROM customer_orders_clean
 ````
 <img width="889" height="431" alt="image" src="https://github.com/user-attachments/assets/4c828e12-effa-4578-8cf9-87229f8ea0b5" />
 
-# Runner Orders Table
+## Runner Orders Table
 #### Original Table
 <img width="910" height="333" alt="image" src="https://github.com/user-attachments/assets/3aedcfc7-0a78-42e1-95cb-dc9719945107" />
 
-Replacing all 'null' values with actual NULL in the distance column.
+Replacing all 'null' with NULL values and removing all words from both the distance and duration columns
 #### SQL Query
 ````sql
 CREATE TABLE runner_orders_clean AS
@@ -49,7 +49,7 @@ SELECT
 FROM pizza_runner.runner_orders;
 ````
 
-### Result of Data Cleaning for Runner Orders Table
+#### Result of Data Cleaning for Runner Orders Table
 ````sql
 SELECT *
 FROM pizza_runner.runner_orders_clean
