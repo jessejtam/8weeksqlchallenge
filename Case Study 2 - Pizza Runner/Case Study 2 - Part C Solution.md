@@ -1,4 +1,5 @@
 ## 1. What are the standard ingredients for each pizza?
+#### SQL Query
 ````sql
 WITH ingredients AS (
 	SELECT 
@@ -21,13 +22,16 @@ SELECT
 FROM ingredients
 GROUP BY pizza_name;
 ````
+#### Final Output
+<img width="590" height="107" alt="image" src="https://github.com/user-attachments/assets/23119aa0-12af-40b8-8d90-2548eb1b257a" />
 
 ## 2. What was the most commonly added extra?
+#### SQL Query
 ````sql
 WITH toppings AS (
 	SELECT
   		REGEXP_SPLIT_TO_TABLE(extras, ',') AS extra
-  	FROM pizza_runner.customer_orders
+  	FROM customer_orders_clean
 )
 
 SELECT
@@ -37,15 +41,19 @@ FROM toppings AS t1
 LEFT JOIN pizza_runner.pizza_toppings AS t2
 ON t1.extra :: INTEGER = t2.topping_id
 GROUP BY topping_name
-ORDER BY times_added DESC;
+ORDER BY times_added DESC
+LIMIT 1;
 ````
+#### Final Output
+<img width="246" height="79" alt="image" src="https://github.com/user-attachments/assets/eb4e9507-eecc-4041-9f1f-090407c2ef38" />
 
 ## 3. What was the most common exclusion?
+#### SQL Query
 ````sql
 WITH toppings AS (
 	SELECT
   		REGEXP_SPLIT_TO_TABLE(exclusions, ',') AS exclusion
-  	FROM pizza_runner.customer_orders
+  	FROM customer_orders_clean
 )
 
 SELECT
@@ -55,14 +63,18 @@ FROM toppings AS t1
 LEFT JOIN pizza_runner.pizza_toppings AS t2
 ON t1.exclusion :: INTEGER = t2.topping_id
 GROUP BY topping_name
-ORDER BY times_excluded DESC;
+ORDER BY times_excluded DESC
+LIMIT 1;
 ````
+#### Final Output
+<img width="257" height="79" alt="image" src="https://github.com/user-attachments/assets/5f25b316-bb9f-4a59-bc72-618b24bd8d52" />
 
 ## 4. Generate an order item for each record in the customers_orders table in the format of one of the following:
 ### - Meat Lovers
 ### - Meat Lovers - Exclude Beef
 ### - Meat Lovers - Extra Bacon
 ### - Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
+#### SQL Query
 ````sql
 WITH exclusion AS (
 	SELECT
@@ -74,7 +86,7 @@ WITH exclusion AS (
   			order_id,
       		ROW_NUMBER() OVER(ORDER BY order_id ASC, pizza_id ASC, exclusions DESC) AS rn,
   			REGEXP_SPLIT_TO_TABLE(exclusions, ',') AS topping
-  		FROM pizza_runner.customer_orders) AS t1 
+  		FROM customer_orders_clean) AS t1 
   	LEFT JOIN pizza_runner.pizza_toppings AS t2
   	ON t1.topping :: INTEGER = t2.topping_id
   	GROUP BY order_id, rn
@@ -90,7 +102,7 @@ extra AS (
   			order_id,
       		ROW_NUMBER() OVER(ORDER BY order_id ASC, pizza_id ASC, exclusions DESC) AS rn,
   			REGEXP_SPLIT_TO_TABLE(extras, ',') AS topping
-  		FROM pizza_runner.customer_orders) AS t1 
+  		FROM customer_orders_clean) AS t1 
   	LEFT JOIN pizza_runner.pizza_toppings AS t2
   	ON t1.topping :: INTEGER = t2.topping_id
   	GROUP BY order_id, rn	
@@ -105,7 +117,7 @@ words AS (
   		ELSE ' - Exclude ' END AS exclude_word,
   		CASE WHEN extras IS NULL THEN ' '
   		ELSE ' - Extra ' END AS extra_word
-  	FROM pizza_runner.customer_orders
+  	FROM customer_orders_clean
   	LEFT JOIN pizza_runner.pizza_names
   	USING(pizza_id)
 )
@@ -119,9 +131,12 @@ ON words.order_id = exclusion.order_id AND words.rn = exclusion.rn
 LEFT JOIN extra
 ON words.order_id = extra.order_id AND words.rn = extra.rn
 ````
+#### Final Output
+<img width="569" height="430" alt="image" src="https://github.com/user-attachments/assets/3fb14858-3f32-400d-bd1f-73820330941e" />
 
 ## 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
 ### - For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
+#### SQL Query
 ````sql
 WITH pizza_table AS (
 	SELECT
@@ -131,7 +146,7 @@ WITH pizza_table AS (
   		exclusions,
   		extras,
   		ROW_NUMBER() OVER(ORDER BY order_id ASC, exclusions DESC) AS row_num
-  	FROM pizza_runner.customer_orders
+  	FROM customer_orders_clean
   	LEFT JOIN pizza_runner.pizza_names
   	USING(pizza_id)
 ),
@@ -232,8 +247,11 @@ FROM pizza_table
 LEFT JOIN wording
 USING(row_num)
 ````
+#### Final Output
+<img width="687" height="424" alt="image" src="https://github.com/user-attachments/assets/be4a42df-c759-4d96-8f24-5d08cee32156" />
 
 ## 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
+#### SQL Query
 ````sql
 WITH delivered AS (
 	SELECT
@@ -241,8 +259,8 @@ WITH delivered AS (
   		pizza_id,
   		exclusions,
   		extras
- 	FROM pizza_runner.customer_orders
-  	LEFT JOIN pizza_runner.runner_orders
+ 	FROM customer_orders_clean
+  	LEFT JOIN runner_orders_clean
   	USING(order_id)
   	WHERE pickup_time IS NOT NULL
 ),
@@ -305,3 +323,5 @@ ON total.toppings :: INTEGER  = t2.topping_id
 GROUP BY topping_name
 ORDER BY total_quantity DESC;
 ````
+#### Final Output
+<img width="252" height="330" alt="image" src="https://github.com/user-attachments/assets/3496be7d-b837-490b-8904-1a0eea8f7160" />
