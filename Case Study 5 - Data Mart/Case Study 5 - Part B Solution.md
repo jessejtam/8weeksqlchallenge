@@ -1,11 +1,12 @@
-### 1. What day of the week is used for each week_date value?
+# Part B - Data Exploration
+## 1. What day of the week is used for each week_date value?
 ````sql
 SELECT
 	DISTINCT(TO_CHAR(week_date, 'Day')) AS day
 FROM clean_weekly_sales;
 ````
 
-### 2. What range of week numbers are missing from the dataset?
+## 2. What range of week numbers are missing from the dataset?
 ````sql
 SELECT
 	DISTINCT(week_number)
@@ -13,7 +14,7 @@ FROM clean_weekly_sales
 ORDER BY week_number ASC;
 ````
 
-### 3. How many total transactions were there for each year in the dataset?
+## 3. How many total transactions were there for each year in the dataset?
 ````sql
 SELECT
 	DATE_PART('Year', week_date) AS year,
@@ -23,7 +24,7 @@ GROUP BY year
 ORDER BY year ASC;
 ````
 
-### 4. What is the total sales for each region for each month?
+## 4. What is the total sales for each region for each month?
 ````sql
 SELECT
 	region,
@@ -34,7 +35,7 @@ GROUP BY region, month
 ORDER BY region, month;
 ````
 
-### 5. What is the total count of transactions for each platform?
+## 5. What is the total count of transactions for each platform?
 ````sql
 SELECT
 	platform,
@@ -43,7 +44,7 @@ FROM clean_weekly_sales
 GROUP BY platform;
 ````
 
-### 6. What is the percentage of sales for Retail vs Shopify for each month?
+## 6. What is the percentage of sales for Retail vs Shopify for each month?
 ````sql
 WITH retail AS (
 	SELECT
@@ -81,7 +82,7 @@ ORDER BY
     END;
 ````
 
-### 7. What is the percentage of sales by demographic for each year in the dataset?
+## 7. What is the percentage of sales by demographic for each year in the dataset?
 ````sql
 WITH total AS (
 	SELECT
@@ -110,7 +111,7 @@ USING(year)
 ORDER BY year;
 ````
 
-### 8. Which age_band and demographic values contribute the most to Retail sales?
+## 8. Which age_band and demographic values contribute the most to Retail sales?
 ````sql
 SELECT
 	age_band,
@@ -122,7 +123,7 @@ GROUP BY age_band, demographic
 ORDER BY total_sales DESC;
 ````
 
-### 9. Can we use the avg_transaction column to find the average transaction size for each year for Retail vs Shopify? If not - how would you calculate it instead?
+## 9. Can we use the avg_transaction column to find the average transaction size for each year for Retail vs Shopify? If not - how would you calculate it instead?
 ````sql
 SELECT
 	calendar_year,
