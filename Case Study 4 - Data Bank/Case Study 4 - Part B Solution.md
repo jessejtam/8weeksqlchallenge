@@ -1,4 +1,5 @@
 ### 1. What is the unique count and total amount for each transaction type?
+#### SQL Query
 ````sql
 SELECT
 	txn_type,
@@ -7,8 +8,11 @@ SELECT
 FROM data_bank.customer_transactions
 GROUP BY txn_type;
 ````
+#### Final Output
+<img width="419" height="124" alt="image" src="https://github.com/user-attachments/assets/37c1c839-d44a-4317-877c-10afb4be9202" />
 
 ### 2. What is the average total historical deposit counts and amounts for all customers?
+#### SQL Query
 ````sql
 WITH count_table AS (
 	SELECT
@@ -25,8 +29,11 @@ SELECT
     ROUND(AVG(deposit_total), 2) AS avg_deposit_amount
 FROM count_table;
 ````
+#### Final Output
+<img width="290" height="82" alt="image" src="https://github.com/user-attachments/assets/0243bcf4-358e-461a-9002-2ac7c6429a95" />
 
 ### 3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
+#### SQL Query
 ````sql
 WITH deposit_table AS (
 	SELECT
@@ -63,8 +70,10 @@ ORDER BY
     WHEN t1.month = 'April' THEN 4
 END;
 ````
+#### Final Output
 
 ### 4. What is the closing balance for each customer at the end of the month?
+#### SQL Query
 ````sql
 WITH deposits AS (
 	SELECT
@@ -105,8 +114,10 @@ ORDER BY customer_id,
     	WHEN month = 'April' THEN 4
 	END;
 ````
+#### Final Output
 
 ### 5. What is the percentage of customers who increase their closing balance by more than 5%?
+#### SQL Query
 ````sql
 WITH deposits AS (
 	SELECT
@@ -186,3 +197,4 @@ LEFT JOIN final_balance
 USING(customer_id)
 WHERE final_bal > 1.05 * initial_bal AND final_bal IS NOT NULL AND initial_bal IS NOT NULL;
 ````
+#### Final Output
