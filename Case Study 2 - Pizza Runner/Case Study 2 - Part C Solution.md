@@ -1,3 +1,4 @@
+# Part C - Ingredient Optimization
 ## 1. What are the standard ingredients for each pizza?
 #### SQL Query
 ````sql
