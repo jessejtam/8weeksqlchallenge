@@ -1,3 +1,4 @@
+# Case Study Questions
 ## 1. What is the total amount each customer spent at the restaurant?
 #### SQL Query
 ````sql
@@ -194,7 +195,8 @@ ORDER BY customer_id;
 #### Final Output
 <img width="245" height="97" alt="image" src="https://github.com/user-attachments/assets/62e53bd6-8b0b-4b39-b6a8-73c69fb1d822" />
 
-## BONUS QUESTION 1: JOIN ALL THE THINGS
+# Bonus Questions
+## Bonus Question 1: Join All The Things
 #### SQL Query
 ````sql
 SELECT customer_id, 
