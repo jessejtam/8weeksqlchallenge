@@ -1,3 +1,4 @@
+# Data Cleaning
 ## Customer Orders Table
 #### Original Table
 <img width="894" height="429" alt="image" src="https://github.com/user-attachments/assets/02658194-5628-46b5-873e-89cf193aad5d" />
