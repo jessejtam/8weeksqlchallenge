@@ -4,8 +4,8 @@
 - age_band
 - demographic
 - customer_type
-#### Do you have any further recommendations for Danny’s team at Data Mart or any interesting insights based off this analysis?
-Region Analysis
+## Region Analysis
+#### SQL Query
 ````sql
 WITH before_change AS (
 	SELECT
@@ -36,7 +36,11 @@ LEFT JOIN after_change
 USING(region)
 ORDER BY percent_difference;
 ````
-Platform Analysis
+#### Final Output
+<img width="753" height="215" alt="image" src="https://github.com/user-attachments/assets/d75e649c-a171-4cf2-8d69-776c5909cc06" />
+
+## Platform Analysis
+#### SQL Query
 ````sql
 WITH before_change AS (
 	SELECT
@@ -67,7 +71,11 @@ LEFT JOIN after_change
 USING(platform)
 ORDER BY percent_difference;
 ````
-Age Band Analysis
+#### Final Output
+<img width="747" height="100" alt="image" src="https://github.com/user-attachments/assets/8e598bcc-5282-434d-b341-d33a720a536d" />
+
+## Age Band Analysis
+#### SQL Query
 ````sql
 WITH before_change AS (
 	SELECT
@@ -98,7 +106,11 @@ LEFT JOIN after_change
 USING(age_band)
 ORDER BY percent_difference;
 ````
-Demographic Analysis
+#### Final Output
+<img width="758" height="143" alt="image" src="https://github.com/user-attachments/assets/085e47c7-0499-4169-9254-1b2796e01024" />
+
+## Demographic Analysis
+#### SQL Query
 ````sql
 WITH before_change AS (
 	SELECT
@@ -129,7 +141,11 @@ LEFT JOIN after_change
 USING(demographic)
 ORDER BY percent_difference;
 ````
-Customer Type Analysis
+#### Final Output
+<img width="746" height="121" alt="image" src="https://github.com/user-attachments/assets/20ee2c63-9581-49b3-a5da-42645192f724" />
+
+## Customer Type Analysis
+#### SQL Query
 ````sql
 WITH before_change AS (
 	SELECT
@@ -160,3 +176,5 @@ LEFT JOIN after_change
 USING(customer_type)
 ORDER BY percent_difference;
 ````
+#### Final Output
+<img width="766" height="126" alt="image" src="https://github.com/user-attachments/assets/b417ebfd-579e-4a47-9f45-ebaf2deba4f5" />
