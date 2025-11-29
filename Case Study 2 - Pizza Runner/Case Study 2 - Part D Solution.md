@@ -10,6 +10,7 @@ USING(order_id)
 WHERE pickup_time IS NOT NULL;
 ````
 #### Final Output
+<img width="77" height="73" alt="image" src="https://github.com/user-attachments/assets/b5738cd6-248e-49bd-a1c2-bfafd7b54002" />
 
 ## 2. What if there was an additional $1 charge for any pizza extras?
 #### Add cheese is $1 extra
@@ -43,6 +44,7 @@ FROM base
 CROSS JOIN extras;
 ````
 #### Final Output
+<img width="82" height="77" alt="image" src="https://github.com/user-attachments/assets/4efc2322-4c23-4299-8369-95bc9cc55219" />
 
 ## 3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner, how would you design an additional table for this new dataset - generate a schema for this new table and insert your own data for ratings for each successful customer order between 1 to 5.
 #### SQL Query
@@ -85,6 +87,7 @@ SET rating =
         END;
 ````
 #### Final Output
+<img width="1129" height="269" alt="image" src="https://github.com/user-attachments/assets/795d4ca8-6b4b-4467-862f-8a1ad133a258" />
 
 ## 4. Using your newly generated table - can you join all of the information together to form a table which has the following information for successful deliveries?
 - customer_id
@@ -120,6 +123,7 @@ GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9
 ORDER BY order_id;
 ````
 #### Final Output
+<img width="1491" height="268" alt="image" src="https://github.com/user-attachments/assets/23259968-c7f1-4660-8d50-249ee3c21f6b" />
 
 ## 5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?
 #### SQL Query
@@ -145,3 +149,4 @@ FROM runner_cost
 CROSS JOIN profits;
 ````
 #### Final Output
+<img width="90" height="75" alt="image" src="https://github.com/user-attachments/assets/df773d98-3ca9-4137-87e1-052272e5a117" />
