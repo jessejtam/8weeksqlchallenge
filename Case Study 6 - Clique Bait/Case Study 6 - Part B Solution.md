@@ -1,4 +1,4 @@
-# Digital Analysis
+# Part B - Digital Analysis
 ## 1. How many users are there?
 #### SQL Query
 ````sql
