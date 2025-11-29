@@ -51,6 +51,7 @@ ORDER BY region, month;
 ````
 #### Final Output
 Only showing results for Canada because the actual output is too long.
+
 <img width="383" height="245" alt="image" src="https://github.com/user-attachments/assets/c3b9df90-640b-47d4-afc9-ecf0589a4be2" />
 
 ## 5. What is the total count of transactions for each platform?
@@ -136,6 +137,7 @@ USING(year)
 ORDER BY year;
 ````
 #### Final Output
+<img width="411" height="294" alt="image" src="https://github.com/user-attachments/assets/9001f294-7159-43ae-b067-ec649c2700fe" />
 
 ## 8. Which age_band and demographic values contribute the most to Retail sales?
 #### SQL Query
@@ -150,6 +152,7 @@ GROUP BY age_band, demographic
 ORDER BY total_sales DESC;
 ````
 #### Final Output
+<img width="388" height="216" alt="image" src="https://github.com/user-attachments/assets/87478219-4cdf-487b-8113-9739d77a0b0f" />
 
 ## 9. Can we use the avg_transaction column to find the average transaction size for each year for Retail vs Shopify? If not - how would you calculate it instead?
 #### SQL Query
@@ -164,3 +167,4 @@ GROUP BY calendar_year, platform
 ORDER BY calendar_year, platform;
 ````
 #### Final Output
+<img width="525" height="216" alt="image" src="https://github.com/user-attachments/assets/e13aa59e-4b34-4171-84f7-5c8e6b12d1d7" />
