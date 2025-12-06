@@ -172,6 +172,26 @@ GROUP BY product_name;
 ## 10. What is the most common combination of at least 1 quantity of any 3 products in a 1 single transaction?
 #### SQL Query
 ````sql
+WITH combinations AS (
+	SELECT
+		t1.product_name || ', ' || t2.product_name || ', ' || t3.product_name AS product_combination
+	FROM balanced_tree.product_details AS t1
+	JOIN balanced_tree.product_details AS t2
+	ON t1.style_id < t2.style_id
+	JOIN balanced_tree.product_details AS t3
+	ON t2.style_id < t3.style_id
+),
 
+transactions AS (
+	SELECT
+  		txn_id,
+  		STRING_AGG(product_name, ', ' ORDER BY style_id ASC) AS transaction_combination
+  	FROM balanced_tree.product_details AS d
+  	JOIN balanced_tree.sales AS s
+  	ON d.product_id = s.prod_id
+  	GROUP BY txn_id
+)
+
+-- do something with product_combination LIKE transaction_combination or something like that
 ````
 #### Final Output
