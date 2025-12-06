@@ -174,6 +174,7 @@ GROUP BY product_name;
 ````sql
 WITH combinations AS (
 	SELECT
+  		ARRAY[t1.product_name, t2.product_name, t3.product_name] AS product_array,
 		t1.product_name || ', ' || t2.product_name || ', ' || t3.product_name AS product_combination
 	FROM balanced_tree.product_details AS t1
 	JOIN balanced_tree.product_details AS t2
@@ -185,13 +186,21 @@ WITH combinations AS (
 transactions AS (
 	SELECT
   		txn_id,
-  		STRING_AGG(product_name, ', ' ORDER BY style_id ASC) AS transaction_combination
+  		ARRAY_AGG(product_name ORDER BY style_id ASC) AS transaction_combination
   	FROM balanced_tree.product_details AS d
   	JOIN balanced_tree.sales AS s
   	ON d.product_id = s.prod_id
   	GROUP BY txn_id
 )
 
--- do something with product_combination LIKE transaction_combination or something like that
+SELECT
+	product_combination,
+    COUNT(*) AS times_combined
+FROM combinations AS c
+JOIN transactions AS t
+ON t.transaction_combination @> c.product_array
+GROUP BY product_combination
+ORDER BY times_combined DESC
+LIMIT 1;
 ````
 #### Final Output
