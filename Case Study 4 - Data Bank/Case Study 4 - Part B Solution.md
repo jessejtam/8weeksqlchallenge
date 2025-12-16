@@ -33,6 +33,7 @@ FROM count_table;
 <img width="290" height="82" alt="image" src="https://github.com/user-attachments/assets/0243bcf4-358e-461a-9002-2ac7c6429a95" />
 
 ### 3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
+The wording of the question was a little ambigious to me, so I assumed that it's asking for customers who made strictly more than 1 deposit, and either 1 or more withdrawals/purchases in a month.
 #### SQL Query
 ````sql
 WITH deposit_table AS (
@@ -61,7 +62,7 @@ SELECT
 FROM deposit_table AS t1
 LEFT JOIN other_table AS t2
 ON t1.customer_id = t2.customer_id AND t1.month = t2.month
-WHERE deposit_count > 1 AND other_count > 1
+WHERE deposit_count > 1 AND other_count >= 1
 GROUP BY t1.month
 ORDER BY
 	CASE WHEN t1.month = 'January' THEN 1
