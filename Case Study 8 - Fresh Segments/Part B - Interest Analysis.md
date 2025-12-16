@@ -60,15 +60,22 @@ WHERE total_months < 14;
 #### Final Output
 
 ## 4. Does this decision make sense to remove these data points from a business perspective? Use an example where there are all 14 months present to a removed interest example for your arguments - think about what it means to have less months present from a segment perspective.
-#### SQL Query
-````sql
-
-````
-#### Final Output
+No, it does not make sense to remove these data points from a business perspective because by removing them, you would be removing over half of the dataset.
 
 ## 5. After removing these interests - how many unique interests are there for each month?
 #### SQL Query
 ````sql
+WITH t1 AS (
+	SELECT
+  		interest_id,
+  		COUNT(DISTINCT(month_year)) AS total_months
+  	FROM fresh_segments.interest_metrics
+  	GROUP BY 1
+)
 
+SELECT
+	COUNT(DISTINCT(interest_id)) AS unique_interests
+FROM t1
+WHERE total_months = 14;
 ````
 #### Final Output
