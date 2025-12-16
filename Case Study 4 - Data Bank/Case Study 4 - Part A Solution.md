@@ -38,10 +38,59 @@ GROUP BY region_name;
 
 ### 4. How many days on average are customers reallocated to a different node?
 #### SQL Query
+````sql
+WITH lag_table AS (
+	SELECT
+		*,
+  		LAG(node_id) OVER(ORDER BY start_date) AS prev_node_id,
+    	LEAD(node_id) OVER(ORDER BY start_date) AS next_node_id
+	FROM data_bank.customer_nodes
+	WHERE end_date <> '9999-12-31'
+),
 
+customers AS (
+	SELECT
+		customer_id,
+		ROUND(AVG(end_date - start_date), 2) AS avg_days
+	FROM lag_table
+	WHERE prev_node_id <> node_id OR next_node_id <> node_id
+  	GROUP BY 1
+)
+
+SELECT
+	ROUND(AVG(avg_days), 2) AS avg_days
+FROM customers;
+````
 #### Final Output
 
 ### 5. What is the median, 80th and 95th percentile for this same reallocation days metric for each region?
 #### SQL Query
+````sql
+WITH lag_table AS (
+	SELECT
+		*,
+  		LAG(node_id) OVER(ORDER BY start_date) AS prev_node_id,
+    	LEAD(node_id) OVER(ORDER BY start_date) AS next_node_id
+	FROM data_bank.customer_nodes
+	WHERE end_date <> '9999-12-31'
+),
 
+customers AS (
+	SELECT
+  		region_id,
+		customer_id,
+		ROUND(AVG(end_date - start_date), 2) AS avg_days
+	FROM lag_table
+	WHERE prev_node_id <> node_id OR next_node_id <> node_id
+  	GROUP BY 1, 2
+)
+
+SELECT
+	region_id,
+	ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY avg_days) :: DECIMAL, 2) AS median,
+	ROUND(PERCENTILE_CONT(0.8) WITHIN GROUP (ORDER BY avg_days) :: DECIMAL, 2) AS "80th_percentile",
+	ROUND(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY avg_days) :: DECIMAL, 2) AS "95th_percentile"   
+FROM customers
+GROUP BY 1;
+````
 #### Final Output
